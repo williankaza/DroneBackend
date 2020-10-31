@@ -1,6 +1,6 @@
 import express, { request, response } from "express";
 
-const app = express()
+const app = express();
 app.use(express.json());
 
 var drones: Array<Drone> = []
@@ -25,7 +25,7 @@ app.post('/drone/:idDrone/medicoes', (request,response)=>{
     let idMedicao: number = 1
     let drone: Drone
     const { idDrone } = request.params
-    const body = request.body
+    const { body } = request
     const indexDrone = drones.findIndex(x => x.idDrone == idDrone)
 
     if (indexDrone > -1){
@@ -58,9 +58,9 @@ app.post('/drone/:idDrone/medicoes', (request,response)=>{
 app.post('/drone', (request, response)=>{
     let idMedicao: number = 1
     let drone: Drone
-    const body = request.body
+    const { body } = request
     const indexDrone = drones.findIndex(x => x.idDrone == body.idDrone)
-
+    
     if (indexDrone > -1){
         let droneMedicoes = drones[indexDrone].medicoes
         idMedicao = Math.max(...droneMedicoes.map(medicao => medicao.idMedicao))+1
@@ -94,6 +94,15 @@ app.post('/drone', (request, response)=>{
     return response.status(200).json(drone)
 })
 
+app.get('/clear/all', (request, response)=>{
+    drones = []
+    return response.status(200)
+})
+
+app.get('/clear', (request, response)=>{
+    drones = [...drones.filter((x)=> x.idDrone != undefined)]
+    return response.json(drones)
+})
 
 app.get('/drones', (request, response)=>{
     return response.json(drones)
